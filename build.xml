@@ -1,0 +1,53 @@
+<project name="Jarminator" default="dist" basedir=".">
+
+	<description>Jarminator - JARs Examinator</description>
+
+	<!-- global properties for the project -->
+	<property environment="env"/>
+	<property name="dir.src" location="src"/>
+	<property name="dir.class" location="out"/>
+	<property name="dir.dist" location="dist"/>
+
+	<!-- classpath -->
+	<path id="classpath">
+		<pathelement path="${env.CLASSPATH}" />
+	</path>
+	<path id="bootkclasspath.jdk4">
+		<pathelement location="C:/Program Files (x86)/Java/jdk1.7.0_45/jre/lib/rt.jar"/>
+	</path>
+
+
+	<!-- targets -->
+	<target name="init" description="init: creates timestamp and destination build folder">
+		<tstamp/>
+	</target>
+
+	<target name="compile" depends="init" description="compile: compiles all sources">
+		<mkdir dir="${dir.class}"/>
+		<javac srcdir="${dir.src}" destdir="${dir.class}" listfiles="on"
+				debug="on" source="1.7" target="1.7" deprecation="true" encoding="UTF-8">
+			<bootclasspath refid="bootkclasspath.jdk4"/>
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile" description="distribution: creates destination folder and the jar file">
+		<mkdir dir="${dir.dist}"/>
+		<jar jarfile="${dir.dist}/jarminator.jar" compress="true">
+			<fileset dir="${dir.class}" includes="**/*.class"/>
+			<fileset dir="${dir.src}" includes="gfx/*"/>
+			<manifest>
+                <attribute name="Main-Class" value="net.sf.jarminator.Jarminator"/>
+				<attribute name="Version" value="0.15"/>
+				<attribute name="Release-Date" value="2007-10-19"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean" description="clean: deletes build and distribution folders">
+		<delete dir="${dir.class}"/>
+		<delete dir="${dir.dist}"/>
+	</target>
+
+</project>
+
