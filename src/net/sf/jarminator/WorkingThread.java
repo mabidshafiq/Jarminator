@@ -118,7 +118,8 @@ class WorkingThread	extends Thread {
 		}
 		
 		createDuplicateClassMap(allClasses);		
-		printReportOnConsole();
+//		printReportOnConsole();
+		printReportOnConsoleCSV();
 		creatDupliateClassesTree(node3);
 		
 	    Jarminator.frame.jarsTree.setModel(new DefaultTreeModel(node));
@@ -288,9 +289,18 @@ class WorkingThread	extends Thread {
 										
 		if(duplicateFilesMap.containsKey(className.toString())){
 		
-			 List<ClassFileEntry> entries = duplicateFilesMap.get(className.toString());
-					
-			 entries.add(new ClassFileEntry(jarName, className.toString(), entry.getTime().toString(),entry.getSize()));
+			List<ClassFileEntry> entries = duplicateFilesMap.get(className.toString());
+			boolean flag = true;
+			for(ClassFileEntry e : entries){
+				if(e.jarName.equalsIgnoreCase(jarName)){
+					flag = false;
+				}
+				
+			}
+			if(flag){
+				entries.add(new ClassFileEntry(jarName, className.toString(), entry.getTime().toString(),entry.getSize()));	
+			}
+			
 		}else{
 			List<ClassFileEntry> entries = new ArrayList<ClassFileEntry>();
 			
@@ -299,6 +309,43 @@ class WorkingThread	extends Thread {
 		}
 		
 	}
+	
+	private void printReportOnConsoleCSV(){
+		// print hash set
+		 Iterator itr = duplicateFilesMap.keySet().iterator();
+			 while(itr.hasNext()){
+				 StringBuffer temp = new StringBuffer();
+				 temp.append("\n");
+				 String className = (String)itr.next();
+				// temp.append(className);
+				 
+				 //System.out.println(className+ ",");
+				 List<ClassFileEntry> values =  duplicateFilesMap.get(className);
+				
+				 for(ClassFileEntry entry : values){
+					 temp.append(entry.getClassName() );
+					 temp.append(",");
+					 temp.append(entry.getTime());
+					 temp.append(",");
+					 temp.append(entry.getSize() + "b");
+					 temp.append(",");
+					 temp.append(entry.getJarName());
+					 temp.append(",");
+					 JarFileEntry jfe = Jarminator.jarsWithTimeStamp.get(entry.getJarName());
+					 temp.append(jfe.getTime());
+					 temp.append(",");
+					 temp.append(jfe.getSize() + "b");
+					// print comma separated string :)
+					 System.out.println(temp.toString()); 
+					 temp = new StringBuffer();
+
+				 }	
+				 
+			 }
+			 
+	}
+	
+	
 	
 	private void printReportOnConsole(){
 		// print hash set
@@ -316,7 +363,12 @@ class WorkingThread	extends Thread {
 					 temp.append(entry.getClassName() + " "+ entry.getTime());
 					 temp.append(" " + entry.getSize() + "b");
 					 temp.append("\n");
-					 temp.append(entry.getJarName()+ " "+ Jarminator.jarsWithTimeStamp.get(entry.getJarName()));
+
+					 JarFileEntry jfe = Jarminator.jarsWithTimeStamp.get(entry.getJarName());
+					 temp.append(jfe.getTime());
+					 temp.append(" ");
+					 temp.append(jfe.getSize() + "b");
+					 
 					// print comma separated string :)
 					 System.out.println(temp.toString()); 
 					 temp = new StringBuffer();

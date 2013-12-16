@@ -25,7 +25,7 @@ import java.util.jar.JarFile;
 public class Jarminator {
 
 	public static final String VERSION = "v1.0";
-	public static HashMap<String, String> jarsWithTimeStamp = new HashMap<String, String>();
+	public static HashMap<String, JarFileEntry> jarsWithTimeStamp = new HashMap<String, JarFileEntry>();
 	public static DateFormat formatter = new SimpleDateFormat("dd-MMM-yy"); 
 	
 	public static String EXCLUDE_KEYWORDS = ".*(oracle|apache|bea|ibm|sun|mongodb|javax|\\$|\\.java|META-INF|cisco|w3c|org).*";
@@ -154,7 +154,8 @@ public class Jarminator {
 			File file = new File(fileName);
 			if (file.exists() == true) {
 				if ((file.isFile() == true) && (fileName.endsWith(".jar"))) {
-					jarsWithTimeStamp.put(fileName, ""+ formatter.format(new Date( file.lastModified())));
+					JarFileEntry jfe = new JarFileEntry(fileName, formatter.format(new Date( file.lastModified())),file.length());
+					jarsWithTimeStamp.put(fileName, jfe);
 					jarList.add(file.getAbsolutePath());
 				} else if (file.isDirectory() == true) {
 					createFileList(jarList, file);
@@ -188,7 +189,8 @@ public class Jarminator {
 			} else {
 				
 				String filename = childs[i].getAbsolutePath();
-				jarsWithTimeStamp.put(filename, ""+ formatter.format(new Date( childs[i].lastModified())));
+				JarFileEntry jfe = new JarFileEntry(filename, formatter.format(new Date( childs[i].lastModified())),childs[i].length());
+				jarsWithTimeStamp.put(filename, jfe);
 				if (filename.endsWith(".jar") == true) {
 					jarList.add(filename);
 				}
